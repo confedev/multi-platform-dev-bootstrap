@@ -12,8 +12,16 @@ if (Test-CommandMissing -CommandName "nvm" -CustomMessage "NVM for Windows") {
         -AppName "NVM for Windows"
 }
 
-if (Test-AppPathMissing -RelativePath "postman" -CustomMessage "Postman") {
+if (Test-AppPathMissing -RelativePath "Postman\Postman.exe" -CustomMessage "Postman") {
     Invoke-DownloadAndInstall `
         -Url "https://dl.pstmn.io/download/latest/win64" `
         -AppName "Postman"
+}
+
+if (Test-CommandMissing -CommandName "sdk" -CustomMessage "SDKMAN (Posh version)") {
+    Install-Module -Name Posh-SDKMan
+}
+
+if (Test-CommandMissing -CommandName "java" -CustomMessage "Java 17") {
+    sdk install java 17.0.20-tem
 }
