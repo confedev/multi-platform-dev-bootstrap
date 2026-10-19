@@ -1,0 +1,6 @@
+[user]
+    name = ${PERSONAL_FULLNAME}
+    email = ${PERSONAL_EMAIL}
+
+[core]
+    sshCommand = ssh -i "~/.ssh/id_ed25519_${PERSONAL_ORG}" -F /dev/null

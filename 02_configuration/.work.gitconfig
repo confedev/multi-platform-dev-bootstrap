@@ -1,0 +1,10 @@
+[user]
+    name = ${WORK_FULLNAME}
+    email = ${WORK_EMAIL}
+
+[core]
+    sshCommand = ssh -i "~/.ssh/id_ed25519_${WORK_ORG}" -F /dev/null
+
+# Incluye la configuración personal solo si el repositorio está dentro de la ruta personal
+[includeIf "gitdir:~/${PERSONAL_ORG}/"]
+    path = ~/${PERSONAL_ORG}/02_configuration/.personal.gitconfig
