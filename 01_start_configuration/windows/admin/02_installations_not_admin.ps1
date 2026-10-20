@@ -23,7 +23,7 @@ if (Test-CommandMissing -CommandName "sdk" -CustomMessage "SDKMAN (Posh version)
 }
 
 if (Test-CommandMissing -CommandName "java" -CustomMessage "Java 17") {
-    sdk install java 17.0.20-tem
+    sdk install java ${DEFAULT_JAVA_VERSION}
 }
 
 if (Test-CommandMissing -CommandName "copilot" -CustomMessage "Github Copilot") {
