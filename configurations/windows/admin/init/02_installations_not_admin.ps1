@@ -64,7 +64,7 @@ if (Test-CommandMissing -CommandName "rg" -CustomMessage "Ripgrep") {
 
 
 if (Test-CommandMissing -CommandName "acli" -CustomMessage "Atlassian CLI") {
-    Save-BinaryToToolsBin -Url "https://acli.atlassian.com/windows/latest/acli_windows_amd64/acli.exe" -CustomMessage "Atlassian CLI"
+    Save-BinaryToTools -Url "https://acli.atlassian.com/windows/latest/acli_windows_amd64/acli.exe" -ToolsSubPath "bin" -CustomMessage "Atlassian CLI"
 }
 
 if (Test-CommandMissing -CommandName "k9s" -CustomMessage "K9s") {

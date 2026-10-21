@@ -1,3 +1,25 @@
+function getConfRootDir {
+    $currentDirectory = [System.IO.Path]::GetFullPath($PSScriptRoot)
+
+    while (-not [string]::IsNullOrWhiteSpace($currentDirectory)) {
+        $workspaceMarker = Join-Path -Path $currentDirectory -ChildPath ".env.sample"
+        $gitDirectory = Join-Path -Path $currentDirectory -ChildPath ".git"
+
+        if ((Test-Path -LiteralPath $workspaceMarker -PathType Leaf) -or (Test-Path -LiteralPath $gitDirectory)) {
+            return $currentDirectory
+        }
+
+        $parentDirectory = Split-Path -Path $currentDirectory -Parent
+        if ([string]::IsNullOrWhiteSpace($parentDirectory) -or $parentDirectory -eq $currentDirectory) {
+            break
+        }
+
+        $currentDirectory = $parentDirectory
+    }
+
+    throw "Could not find the workspace root above '$PSScriptRoot'."
+}
+
 function Test-CommandMissing {
     param (
         [Parameter(Mandatory = $true)]
@@ -122,6 +144,64 @@ function Copy-ConfigFile {
     Copy-Item -Path $Source -Destination $Destination -Force
 }
 
+function Merge-JsonFiles {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string[]]$SourcePaths,
+
+        [Parameter(Mandatory = $true)]
+        [string]$DestinationPath
+    )
+
+    if ($SourcePaths.Count -eq 0) {
+        throw "At least one JSON source file is required."
+    }
+
+    $mergedContent = $null
+    foreach ($sourcePath in $SourcePaths) {
+        if (-not (Test-Path -LiteralPath $sourcePath -PathType Leaf)) {
+            throw "JSON source file not found: '$sourcePath'."
+        }
+
+        $jsonContent = Get-Content -LiteralPath $sourcePath -Raw
+        if ($null -eq $mergedContent) {
+            $mergedContent = $jsonContent
+            continue
+        }
+
+        $jsonContent = [regex]::Replace($jsonContent, '(?m)^\s*//.*(?:\r?\n|$)', '')
+        $config = ConvertFrom-Json -InputObject $jsonContent -ErrorAction Stop
+        if ($null -eq $config -or $config -isnot [pscustomobject]) {
+            throw "JSON source file must contain an object: '$sourcePath'."
+        }
+
+        foreach ($property in $config.PSObject.Properties) {
+            $serializedName = ConvertTo-Json -InputObject $property.Name -Compress
+            $propertyPattern = '(?m)^\s*' + [regex]::Escape($serializedName) + '\s*:'
+            if ([regex]::IsMatch($mergedContent, $propertyPattern)) {
+                throw "Cannot merge duplicate JSON property '$($property.Name)' from '$sourcePath'."
+            }
+
+            $trimmedContent = $mergedContent.TrimEnd()
+            if (-not $trimmedContent.EndsWith('}')) {
+                throw "JSON source must end with an object: '$($SourcePaths[0])'."
+            }
+
+            $body = $trimmedContent.Substring(0, $trimmedContent.Length - 1).TrimEnd()
+            $separator = if ($body.EndsWith('{')) { '' } else { ',' }
+            $serializedValue = ConvertTo-Json -InputObject $property.Value -Depth 100 -Compress
+            $mergedContent = "$body$separator`r`n  ${serializedName}: $serializedValue`r`n}"
+        }
+    }
+
+    $destinationDirectory = Split-Path -Path $DestinationPath -Parent
+    if (-not (Test-Path -LiteralPath $destinationDirectory)) {
+        New-Item -ItemType Directory -Force -Path $destinationDirectory | Out-Null
+    }
+
+    Set-Content -LiteralPath $DestinationPath -Value $mergedContent -NoNewline -Encoding utf8
+}
+
 $Global:SelectedBrowser = "default"
 
 function Open-Url {
@@ -198,7 +278,7 @@ function Add-PathToEnvironment {
     }
 }
 
-function Save-BinaryToToolsBin {
+function Save-BinaryToTools {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0)]
@@ -207,21 +287,25 @@ function Save-BinaryToToolsBin {
         [Parameter(Mandatory = $false, Position = 1)]
         [string]$OutputFileName,
 
+        [Parameter(Mandatory = $true)]
+        [string]$ToolsSubPath,
+
         [Parameter(Mandatory = $false)]
         [string]$CustomMessage
     )
 
     process {
-        $toolsBinDir = Join-Path -Path $HOME -ChildPath ".tools\bin"
-        if (-not (Test-Path -Path $toolsBinDir)) {
-            New-Item -ItemType Directory -Path $toolsBinDir -Force | Out-Null
+        $toolsDir = Join-Path -Path $HOME -ChildPath ".tools"
+        $destinationDir = Join-Path -Path $toolsDir -ChildPath $ToolsSubPath
+        if (-not (Test-Path -Path $destinationDir)) {
+            New-Item -ItemType Directory -Path $destinationDir -Force | Out-Null
         }
 
         if ([string]::IsNullOrWhiteSpace($OutputFileName)) {
             $OutputFileName = [System.IO.Path]::GetFileName(($Url -split '\?')[0])
         }
 
-        $destinationPath = Join-Path -Path $toolsBinDir -ChildPath $OutputFileName
+        $destinationPath = Join-Path -Path $destinationDir -ChildPath $OutputFileName
 
         if (-not [string]::IsNullOrWhiteSpace($CustomMessage)) {
             Write-Host "Downloading $CustomMessage..." -ForegroundColor Cyan
@@ -237,4 +321,20 @@ function Save-BinaryToToolsBin {
             Write-Host "Failed to download binary: $_" -ForegroundColor Red
         }
     }
+}
+
+function Test-PathExists {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    $exists = Test-Path -Path $Path
+
+    if ($exists) {
+        Write-Host "Path '$Path' already exists." -ForegroundColor Yellow
+    }
+
+    return $exists
 }
