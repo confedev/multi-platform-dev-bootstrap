@@ -1,0 +1,10 @@
+{
+  "$schema": "vscode://schemas/settings/user",
+  "editor.unicodeHighlight.includeStrings": false,
+  "workbench.iconTheme": "material-icon-theme",
+  "git.enableSmartCommit": true,
+  "workbench.editorAssociations": {
+    "*.md": "vscode.markdown.preview.editor"
+  },
+  "extensions.autoUpdate": "off"
+}

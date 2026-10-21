@@ -1,0 +1,100 @@
+# The Work .gitconfig is considered the global one.
+[user]
+    name = ${WORK_FULLNAME}
+    email = ${WORK_EMAIL}
+
+[includeIf "gitdir:~/${PERSONAL_ORG}/"]
+    path = ~/${PERSONAL_ORG}/configurations/windows/admin/files/configurations/git/.personal.gitconfig
+
+[core]
+    sshCommand = ssh -i "~/.ssh/id_ed25519_${WORK_ORG}" -F /dev/null
+    autocrlf = false
+    pager = less -r
+
+[diff]
+    tool = diffvscode
+
+[difftool "diffvscode"]
+    cmd = code --wait --diff $LOCAL $REMOTE
+
+[merge]
+    tool = mrvscode
+
+[mergetool "mrvscode"]
+    cmd = code --wait --merge $REMOTE $LOCAL $BASE $MERGED
+
+[color]
+    ui = auto
+
+[push]
+    autoSetupRemote = true
+
+[alias]
+    # Alias
+    la = "!git config -l | grep alias | cut -c 7-"
+
+    # Branches
+    b = branch
+    ba = branch -a
+    bc = "!git branch --show-current"
+    bd = branch -d
+    bdd = branch -D
+    bu = fetch -p
+    brr = "!git branch temp && git checkout develop && git reset --hard origin/$(git branch --show-current) && git fetch -p && git pull && git branch | grep -v 'develop' | grep -v 'master' | grep -v 'main' | xargs git branch -D"
+    bclear = "!git rr && git bu && git co $(git get-default-branch) && git llor && git b | grep -v "$(git get-default-branch)" | xargs git branch -D"
+
+    # Checkout
+    co = checkout
+    cob = checkout -b
+
+    # Commit
+    cam = "!git add -A && git commit -m"
+    ccc = !git add -A && git commit -m \"Updated: `date +'%Y-%m-%d %H:%M:%S'`\"
+
+    # Diffs
+    d = diff
+    df = diff --name-only
+    dc = diff --cached
+    ds = diff --stat
+
+    # Ignore
+    ignore = update-index --assume-unchanged
+    unignore = update-index --no-assume-unchanged
+    ignored = "!git ls-files -v | grep '^[a-z]'"
+
+    # Logs
+    l = log --pretty=format:"%C(yellow)%h\\ %ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]%Cgreen\\ [%ce]" --decorate --date=short
+    bl = "!git branch --sort=-committerdate --format='%(color:green)%(refname:short) %(color:reset)%(committerdate:format-local:%Y-%m-%d %H:%M:%S)' && git branch -r --sort=-committerdate --format='%(color:red)%(refname:short) %(color:reset)%(committerdate:format-local:%Y-%m-%d %H:%M:%S)'"
+
+    # Pull
+    llor = "!git pull origin $(git branch --show-current)"
+
+    # Push
+    sh = push
+    shor = "!git push origin $(git branch --show-current)"
+    shorg = "!git push origin $(git branch --show-current) && start msedge $(git url)"
+    shornf = "!git push origin $(git branch --show-current) --no-verify"
+    shorgnf = "!git push origin $(git branch --show-current) --no-verify && start msedge $(git url)"
+
+    # Reset
+    rr = "!git reset --hard origin/$(git branch --show-current)"
+
+    # Status
+    s = status
+    ss = status -s
+
+    # Tasks
+    ## All Status
+    t-all-s = "!ls -d */ | xargs -I {} sh -c 'echo {} && cd {} && git s && cd .. && echo -e \n'"
+    ## All Update
+    t-all-u = "!ls -d */ | xargs -I {} sh -c 'echo {} && cd {} && git bclear && cd .. && echo -e \n'"
+
+    # Tree
+    tree = log --graph --oneline --all
+
+    # Get
+    get-default-branch = "!git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'"
+    get-remote = "!git config --get remote.origin.url"
+
+    # Test alias call
+    test = !echo \"Test\"
