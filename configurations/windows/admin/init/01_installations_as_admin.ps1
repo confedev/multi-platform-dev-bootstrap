@@ -1,5 +1,5 @@
 # Imports
-. "$PSScriptRoot\..\functions\for_installations.ps1"
+. (Join-Path $PSScriptRoot "functions\for_installations.ps1")
 
 # Installations
 if (Test-CommandMissing -CommandName "git") {
@@ -13,6 +13,9 @@ if (Test-CommandMissing -CommandName "choco" -CustomMessage "Chocolatey") {
 if (Test-CommandMissing -CommandName "code" -CustomMessage "Visual Studio Code") {
     winget install Microsoft.VisualStudioCode
 }
+
+$DisableVSCodeAutoUpdateScript = Join-Path $PSScriptRoot "..\files\scripts\Disable-VSCodeAutoUpdate.ps1"
+& $DisableVSCodeAutoUpdateScript
 
 if (Test-CommandMissing -CommandName "pwsh" -CustomMessage "PowerShell 7") {
     winget install --id Microsoft.PowerShell --source winget --installer-type wix

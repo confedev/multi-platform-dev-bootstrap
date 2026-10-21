@@ -7,4 +7,4 @@
 
 # Incluye la configuración personal solo si el repositorio está dentro de la ruta personal
 [includeIf "gitdir:~/${PERSONAL_ORG}/"]
-    path = ~/${PERSONAL_ORG}/02_configuration/.personal.gitconfig
+    path = ~/${PERSONAL_ORG}/configurations/.personal.gitconfig

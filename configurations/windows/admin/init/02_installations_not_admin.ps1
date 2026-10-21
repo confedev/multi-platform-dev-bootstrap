@@ -1,5 +1,5 @@
 # Imports
-. "$PSScriptRoot\..\functions\for_installations.ps1"
+. (Join-Path $PSScriptRoot "functions\for_installations.ps1")
 
 # Installations
 if (Test-AppPathMissing -RelativePath "BraveSoftware\Brave-Browser\Application\brave.exe" -CustomMessage "Brave Browser") {

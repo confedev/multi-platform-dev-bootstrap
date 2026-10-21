@@ -1,5 +1,5 @@
 param (
-    [string]$EnvPath = "$PSScriptRoot\..\..\..\.env"
+    [string]$EnvPath = "$PSScriptRoot\..\..\..\..\.env"
 )
 
 Write-Host "==========================================" -ForegroundColor Cyan
@@ -7,8 +7,7 @@ Write-Host " INITIALIZING WINDOWS SETUP PRESET" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 
 $ResolvedEnvPath = [System.IO.Path]::GetFullPath($EnvPath)
-$StartConfigurationDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..")
-$ConfigDir = [System.IO.Path]::GetFullPath("$PSScriptRoot\..\..\..\02_configuration")
+$StartConfigurationDir = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
 
 if (-not (Test-Path -LiteralPath $ResolvedEnvPath -PathType Leaf)) {
     Write-Error "Error: Environment file not found at: $ResolvedEnvPath"
@@ -34,10 +33,7 @@ Get-Content -LiteralPath $ResolvedEnvPath | ForEach-Object {
 }
 
 Write-Host "Replacing template values from: $ResolvedEnvPath" -ForegroundColor Green
-$TemplateFiles = @(
-    Get-ChildItem -LiteralPath $ConfigDir -File -Filter "*.gitconfig"
-    Get-ChildItem -LiteralPath $StartConfigurationDir -File -Recurse -Force
-)
+$TemplateFiles = @(Get-ChildItem -LiteralPath $StartConfigurationDir -File -Recurse -Force)
 $PlaceholderPattern = '\$\{([A-Z0-9_]+)\}'
 $RenderedFiles = @()
 
