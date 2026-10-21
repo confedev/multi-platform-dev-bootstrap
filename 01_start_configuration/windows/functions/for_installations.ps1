@@ -154,3 +154,87 @@ function Open-Url {
         Write-Error "An error occurred while trying to open the URL: $_"
     }
 }
+
+function Add-PathToEnvironment {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0)]
+        [string]$Path,
+
+        [Parameter(Mandatory = $false)]
+        [bool]$IsMachine = $false
+    )
+
+    process {
+        $targetScope = if ($IsMachine) { "Machine" } else { "User" }
+
+        if (-not (Test-Path -Path $Path)) {
+            New-Item -ItemType Directory -Path $Path -Force | Out-Null
+        }
+
+        $resolvedPath = (Resolve-Path -Path $Path).ProviderPath
+
+        $currentPath = [Environment]::GetEnvironmentVariable("Path", $targetScope)
+
+        $pathArray = if ($currentPath) { $currentPath -split ';' } else { @() }
+        $normalizedPathArray = $pathArray | ForEach-Object { $_.TrimEnd('\') }
+        $normalizedTargetPath = $resolvedPath.TrimEnd('\')
+
+        if ($normalizedPathArray -notcontains $normalizedTargetPath) {
+            $newPath = if ([string]::IsNullOrWhiteSpace($currentPath)) {
+                $resolvedPath
+            } else {
+                "$currentPath;$resolvedPath"
+            }
+
+            [Environment]::SetEnvironmentVariable("Path", $newPath, $targetScope)
+            
+            $env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [Environment]::GetEnvironmentVariable("Path", "User")
+
+            Write-Host "Path '$resolvedPath' successfully added to the $targetScope environment variable." -ForegroundColor Green
+        } else {
+            Write-Host "Path '$resolvedPath' already exists in the $targetScope environment variable." -ForegroundColor Yellow
+        }
+    }
+}
+
+function Save-BinaryToToolsBin {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0)]
+        [string]$Url,
+
+        [Parameter(Mandatory = $false, Position = 1)]
+        [string]$OutputFileName,
+
+        [Parameter(Mandatory = $false)]
+        [string]$CustomMessage
+    )
+
+    process {
+        $toolsBinDir = Join-Path -Path $HOME -ChildPath ".tools\bin"
+        if (-not (Test-Path -Path $toolsBinDir)) {
+            New-Item -ItemType Directory -Path $toolsBinDir -Force | Out-Null
+        }
+
+        if ([string]::IsNullOrWhiteSpace($OutputFileName)) {
+            $OutputFileName = [System.IO.Path]::GetFileName(($Url -split '\?')[0])
+        }
+
+        $destinationPath = Join-Path -Path $toolsBinDir -ChildPath $OutputFileName
+
+        if (-not [string]::IsNullOrWhiteSpace($CustomMessage)) {
+            Write-Host "Downloading $CustomMessage..." -ForegroundColor Cyan
+        } else {
+            Write-Host "Downloading binary from '$Url'..." -ForegroundColor Cyan
+        }
+
+        try {
+            Invoke-WebRequest -Uri $Url -OutFile $destinationPath -UseBasicParsing
+            Write-Host "Binary successfully saved to '$destinationPath'." -ForegroundColor Green
+        }
+        catch {
+            Write-Host "Failed to download binary: $_" -ForegroundColor Red
+        }
+    }
+}

@@ -1,4 +1,9 @@
-.env
-local-test/
+# Enviroments
+.env*
+!.env.sample
+
+# Temporal, planning and testing Files
+.temp/
 plan.md
 todo.md
+local-test/
