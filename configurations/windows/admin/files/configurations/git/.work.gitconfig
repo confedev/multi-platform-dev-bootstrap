@@ -72,9 +72,9 @@
     # Push
     sh = push
     shor = "!git push origin $(git branch --show-current)"
-    shorg = "!git push origin $(git branch --show-current) && start msedge $(git url)"
+    shorg = "!git push origin $(git branch --show-current) && start ${DEFAULT_BROWSER} $(git url)"
     shornf = "!git push origin $(git branch --show-current) --no-verify"
-    shorgnf = "!git push origin $(git branch --show-current) --no-verify && start msedge $(git url)"
+    shorgnf = "!git push origin $(git branch --show-current) --no-verify && start ${DEFAULT_BROWSER} $(git url)"
 
     # Reset
     rr = "!git reset --hard origin/$(git branch --show-current)"

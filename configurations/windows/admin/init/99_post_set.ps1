@@ -14,4 +14,10 @@ Write-Host "Resetting local repository changes..." -ForegroundColor Yellow
 git reset --hard HEAD
 git clean -fd
 
+$CentralizedConfigurationsPath = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath "confedev-centralized-configurations"
+if (Test-Path -LiteralPath $CentralizedConfigurationsPath) {
+    Remove-Item -LiteralPath $CentralizedConfigurationsPath -Recurse -Force
+    Write-Host "Removed temporary centralized configurations clone." -ForegroundColor Green
+}
+
 Write-Host "`nPost-set cleanup completed successfully! Repository is clean." -ForegroundColor Green

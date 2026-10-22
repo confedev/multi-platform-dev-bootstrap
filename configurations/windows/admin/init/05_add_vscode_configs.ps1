@@ -3,10 +3,11 @@
 
 $ConfRootDir = getConfRootDir
 $SourceDir = Join-Path -Path $ConfRootDir -ChildPath "configurations\windows\admin\files\configurations"
+$CentralizedConfigurationsPath = Join-Path -Path ([System.IO.Path]::GetTempPath()) -ChildPath "confedev-centralized-configurations"
 
 Merge-JsonFiles -SourcePaths @(
     (Join-Path -Path $SourceDir -ChildPath "vscode\settings.json"),
-    (Join-Path -Path $SourceDir -ChildPath "vscode\cSpell_en.json")
+    (Join-Path -Path $CentralizedConfigurationsPath -ChildPath "multi-platform-dev-bootstrap\cSpell_en.json")
 ) -DestinationPath "$env:APPDATA\Code\User\settings.json"
 
 # Enabled
