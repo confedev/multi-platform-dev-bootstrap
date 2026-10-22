@@ -4,7 +4,7 @@
 # Installations
 if (Test-AppPathMissing -RelativePath "BraveSoftware\Brave-Browser\Application\brave.exe" -CustomMessage "Brave Browser") {
     winget install Brave.Brave
-} 
+}
 
 if (Test-CommandMissing -CommandName "nvm" -CustomMessage "NVM for Windows") {
     Invoke-DownloadAndInstall `
@@ -28,38 +28,6 @@ if (Test-CommandMissing -CommandName "java" -CustomMessage "Java 17") {
 
 if (Test-CommandMissing -CommandName "copilot" -CustomMessage "Github Copilot") {
     winget install GitHub.Copilot
-}
-
-if (Test-CommandMissing -CommandName "zoxide" -CustomMessage "Zoxide") {
-    choco install zoxide -y
-}
-
-if (Test-CommandMissing -CommandName "fzf" -CustomMessage "Fuzzy Finder") {
-    choco install fzf -y
-}
-
-if (Test-CommandMissing -CommandName "glow" -CustomMessage "Glow") {
-    choco install glow -y
-}
-
-if (Test-CommandMissing -CommandName "jq" -CustomMessage "jq") {
-    choco install jq -y
-}
-
-if (Test-CommandMissing -CommandName "yq" -CustomMessage "yq") {
-    choco install yq -y
-}
-
-if (Test-CommandMissing -CommandName "kubectl" -CustomMessage "Kubernetes CLI") {
-    choco install kubernetes-cli -y
-}
-
-if (Test-CommandMissing -CommandName "grep" -CustomMessage "GNU Grep") {
-    choco install grep -y
-}
-
-if (Test-CommandMissing -CommandName "rg" -CustomMessage "Ripgrep") {
-    choco install ripgrep -y
 }
 
 

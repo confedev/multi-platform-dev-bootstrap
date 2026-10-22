@@ -48,9 +48,9 @@ if ($false){
     code --install-extension vscjava.vscode-java-dependency
     code --install-extension vscjava.vscode-java-pack
     code --install-extension vscjava.vscode-java-test
-    code --install-extension vscjava.vscode-java-upgrade
     code --install-extension vscjava.vscode-gradle
     code --install-extension vscjava.vscode-maven
+    code --install-extension vscjava.ms-vscode.PowerShell
 }
 
 # Disabled

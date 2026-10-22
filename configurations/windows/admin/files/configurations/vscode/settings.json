@@ -213,32 +213,7 @@
   "chat.tools.global.autoApprove": false,
   "chat.permissions.default": "default",
   "chat.viewSessions.orientation": "stacked",
-  "search.useIgnoreFiles": false
-  // "terminal.integrated.defaultProfile.windows": "PowerShell",
-  // "atlascode.rovodev.showEntitlementNotifications": false,
-  // "atlascode.jira.todoIssues.enabled": false,
-  // "atlascode.jira.explorer.refreshInterval": 30,
-  // "atlascode.bitbucket.statusbar.enabled": false,
-  // "atlascode.bitbucket.statusbar.showProduct": false,
-  // "atlascode.bitbucket.statusbar.showUser": false,
-  // "atlascode.jira.statusbar.showProduct": false,
-  // "atlascode.jira.statusbar.showUser": false,
-  // "atlascode.jira.statusbar.showLogin": true,
-  // "atlascode.jira.statusbar.enabled": true,
-  // "atlascode.jira.jqlList": [
-  //   {
-  //     "id": "xxxxxxx",
-  //     "siteId": "xxxxxxx",
-  //     "name": "Me on Open Sprints",
-  //     "query": "assignee = currentUser() AND sprint in openSprints()",
-  //     "enabled": true,
-  //     "monitor": true
-  //   }
-  // ],
-  // "atlascode.jira.explorer.nestSubtasks": false,
-  // "atlascode.jira.startWorkBranchTemplate.customTemplate": "{{{prefix}}}{{{issueKey}}}",
-  // "atlascode.bitbucket.showTerminalLinkPanel": false,
-  // "atlascode.bitbucket.enabled": false,
-  // "atlascode.helpExplorerEnabled": false,
-  // "atlascode.jira.enabled": true,
+  "search.useIgnoreFiles": false,
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "powershell.startAutomatically": false
 }
